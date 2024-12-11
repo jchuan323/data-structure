@@ -1,35 +1,35 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define MAX_SIZE 9  // ×î´ó¼¯ºÏÔªËØÊıÁ¿
+#define MAX_SIZE 9  // æœ€å¤§é›†åˆå…ƒç´ æ•°é‡
 
-// ²¢²é¼¯½á¹¹
-int parent[MAX_SIZE + 1];  // parent[i] ÊÇ i ÔªËØµÄ¸¸½Úµã
-int rank[MAX_SIZE + 1];    // ÓÃÓÚÓÅ»¯µÄÖÈ
+// å¹¶æŸ¥é›†ç»“æ„
+int parent[MAX_SIZE + 1];  // parent[i] æ˜¯ i å…ƒç´ çš„çˆ¶èŠ‚ç‚¹
+int rank[MAX_SIZE + 1];    // ç”¨äºä¼˜åŒ–çš„ç§©
 
-// ³õÊ¼»¯²¢²é¼¯
+// åˆå§‹åŒ–å¹¶æŸ¥é›†
 void initialize() {
     for (int i = 1; i <= MAX_SIZE; i++) {
-        parent[i] = i;  // Ã¿¸öÔªËØµÄ¸¸½Úµã³õÊ¼»¯Îª×Ô¼º
-        rank[i] = 0;     // ÖÈ³õÊ¼»¯Îª 0
+        parent[i] = i;  // æ¯ä¸ªå…ƒç´ çš„çˆ¶èŠ‚ç‚¹åˆå§‹åŒ–ä¸ºè‡ªå·±
+        rank[i] = 0;     // ç§©åˆå§‹åŒ–ä¸º 0
     }
 }
 
-// ²éÕÒ¸ù½Úµã
+// æŸ¥æ‰¾æ ¹èŠ‚ç‚¹
 int find(int x) {
     if (parent[x] != x) {
-        parent[x] = find(parent[x]);  // Â·¾¶Ñ¹Ëõ
+        parent[x] = find(parent[x]);  // è·¯å¾„å‹ç¼©
     }
     return parent[x];
 }
 
-// ºÏ²¢Á½¸ö¼¯ºÏ
+// åˆå¹¶ä¸¤ä¸ªé›†åˆ
 void union_sets(int x, int y) {
     int rootX = find(x);
     int rootY = find(y);
 
     if (rootX != rootY) {
-        // °´ÖÈºÏ²¢
+        // æŒ‰ç§©åˆå¹¶
         if (rank[rootX] > rank[rootY]) {
             parent[rootY] = rootX;
         }
@@ -43,7 +43,7 @@ void union_sets(int x, int y) {
     }
 }
 
-// ÑéÖ¤×Ô·´ĞÔ
+// éªŒè¯è‡ªåæ€§
 bool check_reflexive(int relations[][2], int n, int elements[], int num_elements) {
     for (int i = 0; i < num_elements; i++) {
         bool found = false;
@@ -58,7 +58,7 @@ bool check_reflexive(int relations[][2], int n, int elements[], int num_elements
     return true;
 }
 
-// ÑéÖ¤¶Ô³ÆĞÔ
+// éªŒè¯å¯¹ç§°æ€§
 bool check_symmetric(int relations[][2], int n) {
     for (int i = 0; i < n; i++) {
         bool found = false;
@@ -73,7 +73,7 @@ bool check_symmetric(int relations[][2], int n) {
     return true;
 }
 
-// ÑéÖ¤´«µİĞÔ
+// éªŒè¯ä¼ é€’æ€§
 bool check_transitive(int relations[][2], int n) {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -92,13 +92,13 @@ bool check_transitive(int relations[][2], int n) {
     return true;
 }
 
-// Êä³ö¼¯ºÏµÄ»®·Ö
+// è¾“å‡ºé›†åˆçš„åˆ’åˆ†
 void print_partition(int num_elements, int elements[]) {
-    printf("¼¯ºÏµÄ»®·Ö£º\n");
-    bool printed[MAX_SIZE + 1] = { false };  // ±ê¼ÇÊÇ·ñÒÑ´òÓ¡Ä³¸ö¼¯ºÏ
+    printf("é›†åˆçš„åˆ’åˆ†ï¼š\n");
+    bool printed[MAX_SIZE + 1] = { false };  // æ ‡è®°æ˜¯å¦å·²æ‰“å°æŸä¸ªé›†åˆ
     for (int i = 0; i < num_elements; i++) {
         int root = find(elements[i]);
-        if (!printed[root]) {  // Î´´òÓ¡¹ı¸Ã¼¯ºÏ
+        if (!printed[root]) {  // æœªæ‰“å°è¿‡è¯¥é›†åˆ
             printf("{");
             for (int j = 0; j < num_elements; j++) {
                 if (find(elements[j]) == root) {
@@ -106,76 +106,76 @@ void print_partition(int num_elements, int elements[]) {
                 }
             }
             printf("}\n");
-            printed[root] = true;  // ±ê¼ÇÎªÒÑ´òÓ¡
+            printed[root] = true;  // æ ‡è®°ä¸ºå·²æ‰“å°
         }
     }
 }
 
 int main() {
     int num_elements;
-    printf("ÇëÊäÈë¼¯ºÏµÄÔªËØ¸öÊı£¨×î¶à %d ¸ö£©£º", MAX_SIZE);
+    printf("è¯·è¾“å…¥é›†åˆçš„å…ƒç´ ä¸ªæ•°ï¼ˆæœ€å¤š %d ä¸ªï¼‰ï¼š", MAX_SIZE);
     scanf("%d", &num_elements);
     if (num_elements > MAX_SIZE || num_elements <= 0) {
-        printf("ÔªËØ¸öÊı²»ºÏ·¨£¡\n");
+        printf("å…ƒç´ ä¸ªæ•°ä¸åˆæ³•ï¼\n");
         return 0;
     }
 
-    // ÊäÈë¼¯ºÏÔªËØ
+    // è¾“å…¥é›†åˆå…ƒç´ 
     int elements[num_elements];
-    printf("ÇëÊäÈë¼¯ºÏÖĞµÄÔªËØ£¨·¶Î§ 1 µ½ %d£©£º", MAX_SIZE);
+    printf("è¯·è¾“å…¥é›†åˆä¸­çš„å…ƒç´ ï¼ˆèŒƒå›´ 1 åˆ° %dï¼‰ï¼š", MAX_SIZE);
     for (int i = 0; i < num_elements; i++) {
         scanf("%d", &elements[i]);
         if (elements[i] < 1 || elements[i] > MAX_SIZE) {
-            printf("ÊäÈëµÄÔªËØ³¬³ö·¶Î§£¡\n");
+            printf("è¾“å…¥çš„å…ƒç´ è¶…å‡ºèŒƒå›´ï¼\n");
             return 0;
         }
     }
 
-    // ÊäÈë¹ØÏµĞòÅ¼¶ÔµÄ¸öÊı
+    // è¾“å…¥å…³ç³»åºå¶å¯¹çš„ä¸ªæ•°
     int num_relations;
-    printf("ÇëÊäÈë¹ØÏµĞòÅ¼¶ÔµÄ¸öÊı£º");
+    printf("è¯·è¾“å…¥å…³ç³»åºå¶å¯¹çš„ä¸ªæ•°ï¼š");
     scanf("%d", &num_relations);
 
     if (num_relations < 0) {
-        printf("¹ØÏµĞòÅ¼¶ÔÊıÁ¿²»ºÏ·¨£¡\n");
+        printf("å…³ç³»åºå¶å¯¹æ•°é‡ä¸åˆæ³•ï¼\n");
         return 0;
     }
 
-    // ÊäÈë¹ØÏµĞòÅ¼¶Ô
+    // è¾“å…¥å…³ç³»åºå¶å¯¹
     int relations[num_relations][2];
-    printf("ÇëÊäÈë¹ØÏµĞòÅ¼¶Ô£¨¸ñÊ½£ºx y£¬Ã¿¶ÔÕ¼Ò»ĞĞ£©£º\n");
+    printf("è¯·è¾“å…¥å…³ç³»åºå¶å¯¹ï¼ˆæ ¼å¼ï¼šx yï¼Œæ¯å¯¹å ä¸€è¡Œï¼‰ï¼š\n");
     for (int i = 0; i < num_relations; i++) {
         scanf("%d %d", &relations[i][0], &relations[i][1]);
         if (relations[i][0] < 1 || relations[i][0] > MAX_SIZE ||
             relations[i][1] < 1 || relations[i][1] > MAX_SIZE) {
-            printf("¹ØÏµÊäÈë³¬³ö·¶Î§£¡\n");
+            printf("å…³ç³»è¾“å…¥è¶…å‡ºèŒƒå›´ï¼\n");
             return 0;
         }
     }
 
-    // ³õÊ¼»¯²¢²é¼¯
+    // åˆå§‹åŒ–å¹¶æŸ¥é›†
     initialize();
 
-    // ºÏ²¢¹ØÏµ
+    // åˆå¹¶å…³ç³»
     for (int i = 0; i < num_relations; i++) {
         union_sets(relations[i][0], relations[i][1]);
     }
 
-    // ÑéÖ¤µÈ¼Û¹ØÏµµÄĞÔÖÊ
+    // éªŒè¯ç­‰ä»·å…³ç³»çš„æ€§è´¨
     if (!check_reflexive(relations, num_relations, elements, num_elements)) {
-        printf("²»Âú×ã×Ô·´ĞÔ£¡\n");
+        printf("ä¸æ»¡è¶³è‡ªåæ€§ï¼\n");
         return 0;
     }
     if (!check_symmetric(relations, num_relations)) {
-        printf("²»Âú×ã¶Ô³ÆĞÔ£¡\n");
+        printf("ä¸æ»¡è¶³å¯¹ç§°æ€§ï¼\n");
         return 0;
     }
     if (!check_transitive(relations, num_relations)) {
-        printf("²»Âú×ã´«µİĞÔ£¡\n");
+        printf("ä¸æ»¡è¶³ä¼ é€’æ€§ï¼\n");
         return 0;
     }
 
-    // Êä³ö»®·Ö
+    // è¾“å‡ºåˆ’åˆ†
     print_partition(num_elements, elements);
 
     return 0;
