@@ -1,0 +1,183 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_SIZE 9  // 最大集合元素数量
+
+// 并查集结构
+int parent[MAX_SIZE + 1];  // parent[i] 是 i 元素的父节点
+int rank[MAX_SIZE + 1];    // 用于优化的秩
+
+// 初始化并查集
+void initialize() {
+    for (int i = 1; i <= MAX_SIZE; i++) {
+        parent[i] = i;  // 每个元素的父节点初始化为自己
+        rank[i] = 0;     // 秩初始化为 0
+    }
+}
+
+// 查找根节点
+int find(int x) {
+    if (parent[x] != x) {
+        parent[x] = find(parent[x]);  // 路径压缩
+    }
+    return parent[x];
+}
+
+// 合并两个集合
+void union_sets(int x, int y) {
+    int rootX = find(x);
+    int rootY = find(y);
+
+    if (rootX != rootY) {
+        // 按秩合并
+        if (rank[rootX] > rank[rootY]) {
+            parent[rootY] = rootX;
+        }
+        else if (rank[rootX] < rank[rootY]) {
+            parent[rootX] = rootY;
+        }
+        else {
+            parent[rootY] = rootX;
+            rank[rootX]++;
+        }
+    }
+}
+
+// 验证自反性
+bool check_reflexive(int relations[][2], int n, int elements[], int num_elements) {
+    for (int i = 0; i < num_elements; i++) {
+        bool found = false;
+        for (int j = 0; j < n; j++) {
+            if (relations[j][0] == elements[i] && relations[j][1] == elements[i]) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) return false;
+    }
+    return true;
+}
+
+// 验证对称性
+bool check_symmetric(int relations[][2], int n) {
+    for (int i = 0; i < n; i++) {
+        bool found = false;
+        for (int j = 0; j < n; j++) {
+            if (relations[i][0] == relations[j][1] && relations[i][1] == relations[j][0]) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) return false;
+    }
+    return true;
+}
+
+// 验证传递性
+bool check_transitive(int relations[][2], int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (relations[i][1] == relations[j][0]) {
+                bool found = false;
+                for (int k = 0; k < n; k++) {
+                    if (relations[i][0] == relations[k][0] && relations[j][1] == relations[k][1]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) return false;
+            }
+        }
+    }
+    return true;
+}
+
+// 输出集合的划分
+void print_partition(int num_elements, int elements[]) {
+    printf("集合的划分：\n");
+    bool printed[MAX_SIZE + 1] = { false };  // 标记是否已打印某个集合
+    for (int i = 0; i < num_elements; i++) {
+        int root = find(elements[i]);
+        if (!printed[root]) {  // 未打印过该集合
+            printf("{");
+            for (int j = 0; j < num_elements; j++) {
+                if (find(elements[j]) == root) {
+                    printf("%d ", elements[j]);
+                }
+            }
+            printf("}\n");
+            printed[root] = true;  // 标记为已打印
+        }
+    }
+}
+
+int main() {
+    int num_elements;
+    printf("请输入集合的元素个数（最多 %d 个）：", MAX_SIZE);
+    scanf("%d", &num_elements);
+    if (num_elements > MAX_SIZE || num_elements <= 0) {
+        printf("元素个数不合法！\n");
+        return 0;
+    }
+
+    // 输入集合元素
+    int elements[num_elements];
+    printf("请输入集合中的元素（范围 1 到 %d）：", MAX_SIZE);
+    for (int i = 0; i < num_elements; i++) {
+        scanf("%d", &elements[i]);
+        if (elements[i] < 1 || elements[i] > MAX_SIZE) {
+            printf("输入的元素超出范围！\n");
+            return 0;
+        }
+    }
+
+    // 输入关系序偶对的个数
+    int num_relations;
+    printf("请输入关系序偶对的个数：");
+    scanf("%d", &num_relations);
+
+    if (num_relations < 0) {
+        printf("关系序偶对数量不合法！\n");
+        return 0;
+    }
+
+    // 输入关系序偶对
+    int relations[num_relations][2];
+    printf("请输入关系序偶对（格式：x y，每对占一行）：\n");
+    for (int i = 0; i < num_relations; i++) {
+        scanf("%d %d", &relations[i][0], &relations[i][1]);
+        if (relations[i][0] < 1 || relations[i][0] > MAX_SIZE ||
+            relations[i][1] < 1 || relations[i][1] > MAX_SIZE) {
+            printf("关系输入超出范围！\n");
+            return 0;
+        }
+    }
+
+    // 初始化并查集
+    initialize();
+
+    // 合并关系
+    for (int i = 0; i < num_relations; i++) {
+        union_sets(relations[i][0], relations[i][1]);
+    }
+
+    // 验证等价关系的性质
+    if (!check_reflexive(relations, num_relations, elements, num_elements)) {
+        printf("不满足自反性！\n");
+        return 0;
+    }
+    if (!check_symmetric(relations, num_relations)) {
+        printf("不满足对称性！\n");
+        return 0;
+    }
+    if (!check_transitive(relations, num_relations)) {
+        printf("不满足传递性！\n");
+        return 0;
+    }
+
+    // 输出划分
+    print_partition(num_elements, elements);
+
+    return 0;
+}
+
